@@ -51,12 +51,20 @@ func TestValidateTask(t *testing.T) {
 			name: "empty name",
 			data: todo.TaskData{},
 			err:  todo.ErrEmptyTaskName,
+		}, {
+			name: "max length utf8",
+			data: todo.TaskData{Name: strings.Repeat("€", todo.MaxTaskNameLength)},
+			err:  nil,
 		},
 	}
 
 	for _, test := range tests {
-		err := todo.ValidateTaskData(test.data)
-		assert.Equal(t, test.err, err, test.name)
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			err := todo.ValidateTaskData(test.data)
+			assert.Equal(t, test.err, err)
+		})
 	}
 }
 
