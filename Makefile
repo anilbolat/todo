@@ -1,6 +1,7 @@
 GOPATH := $(shell go env GOPATH)
 BIN_DIR := $(GOPATH)/bin
 MEGACHECK := $(BIN_DIR)/megacheck
+BENCHCMP := $(BIN_DIR)/benchcmp
 
 export GOFLAGS = -mod=vendor
 
@@ -22,6 +23,13 @@ lint: $(MEGACHECK)
 vendor:
 	go mod vendor
 	go mod tidy
+
+.PHONY: benchcmp
+benchcmp: $(BENCHCMP)
+	$(BENCHCMP) old.txt new.txt
+
+$(BENCHCMP):
+	GO111MODULE=off go get -u golang.org/x/tools/cmd/benchcmp
 
 $(MEGACHECK):
 	GO111MODULE=off go get -u honnef.co/go/tools/cmd/megacheck

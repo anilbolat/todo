@@ -37,6 +37,10 @@ func NewList() *List {
 }
 
 func (tl *List) Add(data TaskData) (id uint64, err error) {
+	if err = ValidateTaskData(data); err != nil {
+		return
+	}
+
 	id = tl.nextID
 	tl.tasks[id] = data
 	tl.nextID++

@@ -27,6 +27,9 @@ func TestList(t *testing.T) {
 
 	_, err = todoList.TaskByID(1)
 	require.Equal(t, todo.ErrTaskNotFound, err)
+
+	_, err = todoList.Add(todo.TaskData{})
+	require.Equal(t, todo.ErrEmptyTaskName, err, "Adding task with empty name didn't fail")
 }
 
 func TestValidateTask(t *testing.T) {
