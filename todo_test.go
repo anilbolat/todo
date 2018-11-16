@@ -1,11 +1,11 @@
 package todo_test
 
 import (
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/heppu/todo"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,6 +27,37 @@ func TestList(t *testing.T) {
 
 	_, err = todoList.TaskByID(1)
 	require.Equal(t, todo.ErrTaskNotFound, err)
+}
+
+func TestValidateTask(t *testing.T) {
+	tests := []struct {
+		name string
+		data todo.TaskData
+		err  error
+	}{
+		{
+			name: "valid name length",
+			data: todo.TaskData{Name: "my task"},
+			err:  nil,
+		}, {
+			name: "max length name",
+			data: todo.TaskData{Name: strings.Repeat("a", todo.MaxTaskNameLength)},
+			err:  nil,
+		}, {
+			name: "too long name",
+			data: todo.TaskData{Name: strings.Repeat("a", todo.MaxTaskNameLength+1)},
+			err:  todo.ErrTooLongTaskName,
+		}, {
+			name: "empty name",
+			data: todo.TaskData{},
+			err:  todo.ErrEmptyTaskName,
+		},
+	}
+
+	for _, test := range tests {
+		err := todo.ValidateTaskData(test.data)
+		assert.Equal(t, test.err, err, test.name)
+	}
 }
 
 func BenchmarkList(b *testing.B) {

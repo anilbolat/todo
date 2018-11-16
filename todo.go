@@ -5,8 +5,12 @@ import (
 	"time"
 )
 
+const MaxTaskNameLength = 50
+
 var (
-	ErrTaskNotFound = errors.New("task not found")
+	ErrTaskNotFound    = errors.New("task not found")
+	ErrEmptyTaskName   = errors.New("empty task name")
+	ErrTooLongTaskName = errors.New("too long task name")
 )
 
 type List struct {
@@ -20,7 +24,7 @@ type Task struct {
 }
 
 type TaskData struct {
-	Name      string
+	Name      string // Number of characters must be greater than 0 but less than 50
 	CreatedAt time.Time
 }
 
@@ -48,4 +52,16 @@ func (tl *List) TaskByID(id uint64) (Task, error) {
 		ID:       id,
 		TaskData: taskData,
 	}, nil
+}
+
+func ValidateTaskData(t TaskData) error {
+	if t.Name == "" {
+		return ErrEmptyTaskName
+	}
+
+	if len(t.Name) > MaxTaskNameLength {
+		return ErrTooLongTaskName
+	}
+
+	return nil
 }
