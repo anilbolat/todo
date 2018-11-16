@@ -3,6 +3,7 @@ package todo
 import (
 	"errors"
 	"time"
+	"unicode/utf8"
 )
 
 const MaxTaskNameLength = 50
@@ -59,7 +60,7 @@ func ValidateTaskData(t TaskData) error {
 		return ErrEmptyTaskName
 	}
 
-	if len(t.Name) > MaxTaskNameLength {
+	if utf8.RuneCountInString(t.Name) > MaxTaskNameLength {
 		return ErrTooLongTaskName
 	}
 
