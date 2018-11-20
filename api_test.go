@@ -10,17 +10,16 @@ import (
 	"time"
 
 	"github.com/heppu/todo"
-	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestListAPI(t *testing.T) {
-	handler := httprouter.New()
+	handler := todo.NewHandler(todo.NewList())
 
 	taskData := todo.TaskData{
 		Name:      "my task",
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().Round(0), // strip monotonic clock
 	}
 	body, err := json.Marshal(taskData)
 	require.NoError(t, err, "Failed to marshal task data")
@@ -48,7 +47,7 @@ func TestListAPI(t *testing.T) {
 }
 
 func TestAPIServer(t *testing.T) {
-	handler := httprouter.New()
+	handler := todo.NewHandler(todo.NewList())
 	server := httptest.NewServer(handler)
 	defer server.Close()
 
