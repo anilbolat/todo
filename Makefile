@@ -5,15 +5,19 @@ BENCHCMP := $(BIN_DIR)/benchcmp
 
 export GOFLAGS = -mod=vendor
 
-all: lint test
+all: lint test build
 
 .PHONY: test
 test:
 	go test -race ./...
 
+.PHONY: build
+build:
+	CGO_ENABLED=0 go build -o builds/todo cmd/todo/main.go
+
 .PHONY: benchmark
 benchmark:
-	go test -run None -bench . ./...
+	CGO_ENABLED=0 go test -run None -bench . ./...
 
 .PHONY: lint
 lint: $(MEGACHECK)
