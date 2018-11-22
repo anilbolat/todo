@@ -25,7 +25,7 @@ func TestList(t *testing.T) {
 	assert.Equal(t, id, task.ID)
 	assert.Equal(t, taskData, task.TaskData)
 
-	_, err = todoList.TaskByID(1)
+	_, err = todoList.TaskByID(99999)
 	require.Equal(t, todo.ErrTaskNotFound, err)
 
 	_, err = todoList.Add(todo.TaskData{})

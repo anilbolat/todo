@@ -2,6 +2,8 @@ package todo
 
 import (
 	"errors"
+	"sync"
+	"sync/atomic"
 	"time"
 	"unicode/utf8"
 )
@@ -15,8 +17,8 @@ var (
 )
 
 type List struct {
-	nextID uint64
-	tasks  map[uint64]TaskData
+	prevID uint64
+	tasks  *sync.Map
 }
 
 type Task struct {
@@ -31,8 +33,8 @@ type TaskData struct {
 
 func NewList() *List {
 	return &List{
-		nextID: 0,
-		tasks:  make(map[uint64]TaskData),
+		prevID: 0,
+		tasks:  &sync.Map{},
 	}
 }
 
@@ -41,21 +43,20 @@ func (tl *List) Add(data TaskData) (id uint64, err error) {
 		return
 	}
 
-	id = tl.nextID
-	tl.tasks[id] = data
-	tl.nextID++
+	id = atomic.AddUint64(&tl.prevID, 1)
+	tl.tasks.Store(id, data)
 	return
 }
 
 func (tl *List) TaskByID(id uint64) (Task, error) {
-	taskData, ok := tl.tasks[id]
+	taskData, ok := tl.tasks.Load(id)
 	if !ok {
 		return Task{}, ErrTaskNotFound
 	}
 
 	return Task{
 		ID:       id,
-		TaskData: taskData,
+		TaskData: taskData.(TaskData),
 	}, nil
 }
 
