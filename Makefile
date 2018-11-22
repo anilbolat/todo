@@ -10,6 +10,10 @@ all: lint test
 test:
 	go test -race ./...
 
+.PHONY: benchmark
+benchmark:
+	go test -run None -bench . ./...
+
 .PHONY: lint
 lint: $(MEGACHECK)
 	$(MEGACHECK) ./...

@@ -28,3 +28,21 @@ func TestList(t *testing.T) {
 	_, err = todoList.TaskByID(1)
 	require.Equal(t, todo.ErrTaskNotFound, err)
 }
+
+func BenchmarkList(b *testing.B) {
+	todoList := todo.NewList()
+	id, err := todoList.Add(todo.TaskData{
+		Name:      "my task",
+		CreatedAt: time.Now(),
+	})
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		_, err := todoList.TaskByID(id)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
