@@ -15,3 +15,5 @@ builds
 # benchmark files
 old.txt
 new.txt
+*.html
+*.bin
