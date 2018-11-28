@@ -91,3 +91,7 @@ heap-profile:
 .PHONY: test-profile
 test-profile:
 	go test -cpuprofile cpu.prof -memprofile mem.prof -bench .
+
+.PHONY: trace-profile
+trace-profile:
+	wget -O trace.prof 'http://127.0.0.1:6060/debug/pprof/trace?seconds=10' && go tool trace trace.prof
