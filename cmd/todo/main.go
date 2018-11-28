@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,6 +27,8 @@ func main() {
 	go func() {
 		unexpectedError <- server.ListenAndServe()
 	}()
+
+	go func() { log.Println(http.ListenAndServe(":6060", nil)) }()
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, syscall.SIGTERM, syscall.SIGINT)

@@ -17,3 +17,4 @@ old.txt
 new.txt
 *.html
 *.bin
+*.prof
