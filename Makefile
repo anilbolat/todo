@@ -11,6 +11,10 @@ all: lint test build
 test:
 	go test -race ./...
 
+.PHONY: test-integration
+test-integration:
+	go test -tags=integration -race ./...
+
 .PHONY: build
 build:
 	CGO_ENABLED=0 go build -o builds/todo cmd/todo/main.go
