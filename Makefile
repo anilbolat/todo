@@ -21,6 +21,10 @@ test-integration:
 build:
 	CGO_ENABLED=0 go build -o builds/todo cmd/todo/main.go
 
+.PHONY: clean
+clean:
+	-rm cpu.prof mem.prof trace.prof result.bin plot.html old.txt new.txt builds/*
+
 .PHONY: benchmark
 benchmark:
 	CGO_ENABLED=0 go test -run None -bench . ./...
