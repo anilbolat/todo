@@ -1,4 +1,4 @@
-package todo_test
+package api_test
 
 import (
 	"bytes"
@@ -10,12 +10,14 @@ import (
 	"time"
 
 	"github.com/heppu/todo"
+	"github.com/heppu/todo/api"
+	"github.com/heppu/todo/mem"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestListAPI(t *testing.T) {
-	handler := todo.NewHandler(todo.NewList())
+	handler := api.NewHandler(mem.NewList())
 
 	for i := 0; i < 2; i++ {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
@@ -52,7 +54,7 @@ func TestListAPI(t *testing.T) {
 }
 
 func TestAPIServer(t *testing.T) {
-	handler := todo.NewHandler(todo.NewList())
+	handler := api.NewHandler(mem.NewList())
 	server := httptest.NewServer(handler)
 	defer server.Close()
 

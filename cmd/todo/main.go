@@ -8,15 +8,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/heppu/todo"
+	"github.com/heppu/todo/api"
+	"github.com/heppu/todo/mem"
 )
 
 func main() {
-	todoList := todo.NewList()
+	todoList := mem.NewList()
 
 	server := http.Server{
 		Addr:    ":8000",
-		Handler: todo.NewHandler(todoList),
+		Handler: api.NewHandler(todoList),
 	}
 
 	unexpectedError := make(chan error)

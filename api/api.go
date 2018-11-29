@@ -1,4 +1,4 @@
-package todo
+package api
 
 import (
 	"encoding/json"
@@ -6,15 +6,17 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/heppu/todo"
+	"github.com/heppu/todo/mem"
 	"github.com/julienschmidt/httprouter"
 )
 
 type Handler struct {
-	todoList *List
+	todoList *mem.List
 	router   *httprouter.Router
 }
 
-func NewHandler(todoList *List) *Handler {
+func NewHandler(todoList *mem.List) *Handler {
 	handler := &Handler{
 		todoList: todoList,
 		router:   httprouter.New(),
@@ -39,7 +41,7 @@ func (h *Handler) GetTask(w http.ResponseWriter, r *http.Request, p httprouter.P
 	}
 
 	task, err := h.todoList.TaskByID(id)
-	if err == ErrTaskNotFound {
+	if err == todo.ErrTaskNotFound {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		log.Println(err)
 		return
@@ -57,7 +59,7 @@ func (h *Handler) GetTask(w http.ResponseWriter, r *http.Request, p httprouter.P
 }
 
 func (h *Handler) PostTask(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	task := TaskData{}
+	task := todo.TaskData{}
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
@@ -65,7 +67,7 @@ func (h *Handler) PostTask(w http.ResponseWriter, r *http.Request, p httprouter.
 	}
 
 	id, err := h.todoList.Add(task)
-	if err == ErrEmptyTaskName || err == ErrTooLongTaskName {
+	if err == todo.ErrEmptyTaskName || err == todo.ErrTooLongTaskName {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
 		return
