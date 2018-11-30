@@ -54,12 +54,15 @@ docker-image:
 
 .PHONY: docker-run
 docker-run:
-	docker run --name todo-go --rm --cpuset-cpus='0' -p 8000:8000 -p 6060:6060 $(IMAGE_NAME):latest
+	docker run --name todo-go --rm --memory=1G --cpuset-cpus='0' -p 8000:8000 -p 6060:6060 $(IMAGE_NAME):latest
 
 .PHONY: docker-image-info
 docker-image-info:
 	docker images $(IMAGE_NAME):latest
-	docker history $(IMAGE_NAME):latest
+
+.PHONY: docker-image-history
+docker-image-history:
+	docker history --format "table {{.ID}}\t{{.CreatedBy}}\t{{.Size}}" $(IMAGE_NAME):latest
 
 .PHONY: docker-times
 docker-times:
@@ -71,6 +74,7 @@ docker-stats:
 
 .PHONY: wrk
 wrk:
+	printf '{"Name": "my task", "CreatedAt": "%s"}' $$(date -Is) | curl -H 'Content-Type: application/json' -d @- 127.0.0.1:8000/api/tasks
 	wrk -t2 -c100 -d30s http://127.0.0.1:8000/api/tasks/1
 
 .PHONY: wrk-post
@@ -79,7 +83,8 @@ wrk-post:
 
 .PHONY: vegeta
 vegeta: $(VEGETA)
-	echo "GET http://127.0.0.1:8000/api/tasks/1" | $(VEGETA) attack -name go -duration 30s -rate 2000 | tee result.bin | $(VEGETA) report; $(VEGETA) plot result.bin > plot.html
+	printf '{"Name": "my task", "CreatedAt": "%s"}' $$(date -Is) | curl -H 'Content-Type: application/json' -d @- 127.0.0.1:8000/api/tasks
+	echo "GET http://127.0.0.1:8000/api/tasks/1" | $(VEGETA) attack -name go -duration 60s -rate 2000 | tee result.bin | $(VEGETA) report; $(VEGETA) plot result.bin > plot.html
 
 $(VEGETA):
 	GO111MODULE=off go get -u github.com/tsenart/vegeta
