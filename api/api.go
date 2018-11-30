@@ -7,16 +7,20 @@ import (
 	"strconv"
 
 	"github.com/heppu/todo"
-	"github.com/heppu/todo/mem"
 	"github.com/julienschmidt/httprouter"
 )
 
+type TodoList interface {
+	Add(data todo.TaskData) (id uint64, err error)
+	TaskByID(id uint64) (task todo.Task, err error)
+}
+
 type Handler struct {
-	todoList *mem.List
+	todoList TodoList
 	router   *httprouter.Router
 }
 
-func NewHandler(todoList *mem.List) *Handler {
+func NewHandler(todoList TodoList) *Handler {
 	handler := &Handler{
 		todoList: todoList,
 		router:   httprouter.New(),
